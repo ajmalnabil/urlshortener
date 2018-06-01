@@ -1,0 +1,19 @@
+<% provide(:title, "Home") %>
+<center>
+  <h1>Welcome to the ShortenURL App</h1>
+  <p>
+    This is the main page for the
+    <a href="https://ajurl.herokuapp.com/">ShortenURL</a>
+    application.
+  </p>
+</center>
+
+<center>
+  <h2>Enter your long URL</h2>
+  <%= form_for(@link) do |f| %>
+    <%= f.label :website %>
+    <%= f.url_field :original_url %>
+
+    <%= f.submit "Shorten URL", class: "btn btn-primary" %>
+  <% end %>
+</center>
