@@ -1,7 +1,7 @@
 class LinksController < ApplicationController
   before_action :find_url, only: [:show, :shortened]
 
-  def index
+  def new
     @link = Link.new
   end
 
@@ -17,19 +17,14 @@ class LinksController < ApplicationController
       redirect_to shortened_path(@link.short_url)
     else
       flash[:notice] = "Given URL was already shortened in our database"
-      redirect_to shortened_path(@link.find_by_clean_url.short_url)
+      redirect_to shortened_path(@link.find_duplicate_url.short_url)
     end
   end
 
   def shortened
-    host = Socket.gethostname
+    hostname = request.host_with_port
     @original_url = @link.clean_url
-    @short_url = host + '/' + @link.short_url
-  end
-
-  def get_original_url
-    get_link = Link.find_by_short_url(params[:short_url])
-    redirect_to get_link.clean_url
+    @short_url = hostname + '/' + @link.short_url
   end
 
   private

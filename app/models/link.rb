@@ -18,6 +18,20 @@ class Link < ApplicationRecord
     end
   end
 
+  # Cleaning up the original URL to include http://. if the input does not include one. I use module URI and check "http" using scheme as per below.
+  def clean_up_url
+    self.original_url.strip!
+    stripped_url = URI(self.original_url)
+    if stripped_url.scheme.nil?
+      self.clean_url = "http://#{self.original_url}"
+    elsif stripped_url.scheme == "https"
+      self.clean_url = self.original_url.gsub(/(https?:\/\/)/,"")
+      self.clean_url = "http://#{self.clean_url}"
+    else
+      self.clean_url = self.original_url
+    end
+  end
+
   # As validation only check the original URL uniqueness, I want to check if clean URL is unique too before saving it in DB.
   # Use case: www.google.com and http://www.google.com to be considered as the same URL.
   # Additionally, I am using url_field in View, so users need to include http:// before submitting any link.
@@ -27,18 +41,6 @@ class Link < ApplicationRecord
 
   def new_url?
     find_duplicate_url.nil?
-  end
-
-
-  # Cleaning up the original URL to include http://. if the input does not include one. I use module URI and check "http" using scheme as per below.
-  def clean_up_url
-    self.original_url.strip!
-    stripped_url = URI(self.original_url)
-    if stripped_url.scheme.nil?
-      self.clean_url = "http://#{self.original_url}"
-    else
-      self.clean_url = self.original_url
-    end
   end
 
 end
